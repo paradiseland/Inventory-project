@@ -101,7 +101,7 @@ def plot_demand(goods_category):
 
         plt.grid(True)
         # plt.savefig(f'./result/{code_name[str(good_code)][:5]}.png', format='png', quality=90, dpi=300)
-        # plt.show()
+        plt.show()
 
 if __name__ == "__main__":
     file_place = "/data/outbound.xlsx"
