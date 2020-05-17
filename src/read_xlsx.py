@@ -32,10 +32,19 @@ class Outbound:
         return df_all
 
 
-class 
+class Init_inventory:
+    def __init__(self, initinv_file):
+        self.df = pd.read_excel(initinv_file)
+
+    def get_init_inventory(self):
+        """
+        return dict of code and initial inventory.
+        """
+        return  dict(zip(self.df["物料编码"].tolist(), self.df["库存数量"].tolist()))
 
 if __name__ == "__main__":
     outbound_file = os.getcwd()+"/data/outbound.xlsx"
+    init_file = os.getcwd()+"/data/init_inventory.xlsx"
     outbound = Outbound(outbound_file)
-    outbound.get_value_counts(outbound.column)
-    print(outbound.category)
+    init_inv = Init_inventory(init_file)
+    print(init_inv.get_init_inventory())
