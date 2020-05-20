@@ -25,7 +25,7 @@ class KDE:
         return 1.06*np.std(self.demand, ddof=1)*(len(self.demand))**(-1/5)
     
     def plot(self):
-        X_plot = np.linspace(np.min(self.demand), np.max(self.demand), 300)[:,np.newaxis]
+        X_plot = np.linspace(np.min(self.demand), np.max(self.demand), 300)[:, np.newaxis]
         log_dens = self.estimate.score_samples(X_plot)
         plt.fill(X_plot[:, 0], np.exp(log_dens), fc='#AAAAFF')
         plt.show()
@@ -54,6 +54,6 @@ if __name__ == "__main__":
         # pdf = kde.pdf
         # x_p = np.linspace(np.min(kde.demand), np.max(kde.demand), 300)
         # y_p = [pdf.subs(x, x_i) for x_i in x_p]
-        # ax[0].plot(x_p, y_p) 
+        # ax[0].plot(x_p, y_p)
         kde.plot()
         print(kde.estimate.score(kde.demand))

@@ -42,7 +42,7 @@ class Plan:
         initinv_file = os.getcwd()+"/data/"+file_name
         self.inv = pd.read_excel(initinv_file)
         return dict(zip(self.inv["物料编码"].tolist(), self.inv["库存数量"].tolist()))
-   
+
     @property
     def price(self):
         code = []
@@ -51,7 +51,7 @@ class Plan:
             code.append(good.iloc[0,0])
             price.append(good["单价"].mean())
         return dict(zip(code, price))
-    
+
     def get_monthly_demand(self):
         """
         generate the mothly demand.
@@ -75,7 +75,7 @@ class Plan:
             demand.append(monthly_demand)
 
         return dict(zip(code, demand)), dict(zip(code, ser_days)), code
-    
+
     @property
     def code_name(self):
 
@@ -96,7 +96,6 @@ class Plan:
             code.append(i.iloc[0,0])
             quota.append(i.iloc[0,8])
         return dict(zip(code, quota))
-
 
     def plot_monthly_demand(self):
         """
