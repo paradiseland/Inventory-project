@@ -8,7 +8,8 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
- 
+
+
 class Plan:
     def __init__(self, outbound_name, ininv_name):
         self.leadtime = 2
@@ -19,7 +20,6 @@ class Plan:
         self.category = self.outbound_demo(outbound_name)
         self.init_inventory = self.init_inv(ininv_name)
         self.monthly_demand, self.ser_days, self.code = self.get_monthly_demand()
-
 
     def outbound_demo(self, file_name):
         """
@@ -33,7 +33,6 @@ class Plan:
             tmp_data = self.df[self.df.iloc[:, 0].isin([catagory])]
             df_all.append(tmp_data)
         return df_all
-
 
     def init_inv(self, file_name):
         """
@@ -113,37 +112,37 @@ class Plan:
             xinch = 1366/dpi
             yinch = 768/dpi
             fig, ax = plt.subplots(2, 3, figsize=(xinch, yinch))
-            
             ax[0, 0].plot(time, quantity)
             ax[0, 0].set_title(self.code_name[str(i)][:5]+'---daily demand') 
 
             ax[0, 1].bar(time, quantity)
             ax[0, 1].set_title(self.code_name[str(i)][:5]+'———[daily]---histogram')
-            
+
             plt.sca(ax[0,2])
             ser_day.plot(kind='kde')
             ax[0, 2].set_title('Kernel density figure ---daily')
 
-
             ax[1, 0].plot(list(range(12)), ser_mon.values)
             ax[1, 0].set_title(self.code_name[str(i)][:5]+'---monthly demand')
-            
+
             ax[1, 1].bar(list(range(12)), ser_mon.values)
             ax[1, 1].set_title(self.code_name[str(i)][:5]+'———[monthly]---histogram')
-            
-            plt.sca(ax[1,2])
+
+            plt.sca(ax[1, 2])
             ser_mon.plot(kind='kde')
             ax[1, 2].set_title('Kernel density figure ---monthly')
-            
+
             for i in range(2):
-                ax[0,i].set_xticks(time)
-                ax[0,i].set_xticklabels('|')
-            
+                ax[0, i].set_xticks(time)
+                ax[0, i].set_xticklabels('|')
+
                 ax[1, i].set_xticks(list(range(12)))
-                ax[1, i].set_xticklabels([str(i)+'月' for i in list(range(1,13))])
+                ax[1, i].set_xticklabels(
+                    [str(i)+'月' for i in list(range(1, 13))])
 
             plt.grid(True)
-            # plt.savefig(f'./result/{code_name[str(good_code)][:5]}.png', format='png', quality=90, dpi=300)
+            # plt.savefig(f'./result/{code_name[str(good_code)][:5]}.png',
+            #             format='png', quality=90, dpi=300)
             plt.show()
 
 
@@ -152,7 +151,7 @@ class OriginalPlan(Plan):
     def __init__(self, outbound_name, ininv_name):
         super().__init__(outbound_name, ininv_name)
         self.s_coe = 1/2
-    
+
     def get_plan(self):
         """
         月初到货,月初盘点
@@ -163,8 +162,8 @@ class OriginalPlan(Plan):
             demand = self.monthly_demand[good]
             quot = self.quota[good]
 
-            order = [0]*14 # 2018/11-2019/12: 14 month
-            inventory_real = [self.init_inventory[good]]+[0]*13 #2019/1-2020/2:14 month
+            order = [0]*14  # 2018/11-2019/12: 14 month
+            inventory_real = [self.init_inventory[good]]+[0]*13  # 2019/1-2020/2:14 month
             inventory_will = [self.init_inventory[good]]+[0]*13
             month = 0
 
@@ -175,8 +174,8 @@ class OriginalPlan(Plan):
                 else:
                     order[month+2] = 0
 
-                inventory_real[month+1] = inventory_real[month] - demand[month]+order[month+1]
-                inventory_will[month+1] = inventory_will[month]-demand[month]+order[month+2]
+                inventory_real[month+1] = inventory_real[month] - demand[month] + order[month+1]
+                inventory_will[month+1] = inventory_will[month]-demand[month] + order[month+2]
                 month += 1
             order_all.append(order)
             inventory_all.append([inventory_real, inventory_will])
