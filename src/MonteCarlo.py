@@ -29,22 +29,21 @@ class MonteCarlo:
         al is the sum of leadtime and pandian time.
         """
         s = []
-        for times in range(10):
-            sum_ = 0
-            i = 0
-            F = 0
-            x = np.linspace(start=0, stop=self.upperbound, num=self.sim_times)
-            while F < alpha:
-                sum_ += self.pdf(x[i])
-                F = (self.upperbound-self.lowerbound)*(sum_/self.sim_times)
-                i += 1
-            s.append(x[i])
+        sum_ = 0
+        i = 0
+        F = 0
+        x = np.linspace(start=0, stop=self.upperbound, num=self.sim_times)
+        while F < alpha:
+            sum_ += self.pdf(x[i])
+            F = (self.upperbound-self.lowerbound)*(sum_/self.sim_times)
+            i += 1
+            s.append(x[i-1])
 
-        return int(sum(s)/len(s))*a_l
+        return x[i-1]*a_l
 
 
 if __name__ == "__main__":
     def f_x_(x):
         return 3*(x**2)+4*math.cos(x)-4*x*math.sin(x)
 
-    print(MonteCarlo(f_x_, 15, 10).integrate())
+    print(MonteCarlo(f_x_, 15, 10).get_mu())

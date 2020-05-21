@@ -83,7 +83,7 @@ class Plan:
         """
         code_name = dict()
         for i in self.category:
-            tmp = str(i.iloc[0, 0])
+            tmp = i.iloc[0, 0]
             code_name[tmp] = i.iloc[0, 1]
         return code_name
 
