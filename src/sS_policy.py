@@ -1,4 +1,5 @@
 import sympy
+from MenteCarlo import MonteCarlo
 
 
 class sSpolicy:
@@ -13,10 +14,12 @@ class sSpolicy:
         self.leadtime = leadtime
         self.K = setup_cost
         self.h = holding_cost
+        self.max_demand = 
         self.init()
 
     def init(self):
-        self.mu = sympy.integrate(self.pdf, (x, 0, sympy.oo))
+        def x_pdf(x): return self.pdf(x)*x
+        self.mu = MonteCarlo(x_pdf, upperbound=1.5*self.max_demand).integrate()
         self.s = self.get_s()
         self.S = self.s + (2 * self.mu * self.K / self.h) ** .5
         self.Is = self.s - (self.leadtime+self.period)*self.mu
