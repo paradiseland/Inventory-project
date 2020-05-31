@@ -1,4 +1,5 @@
-from MonteCarlo import MonteCarlo
+import numpy as np
+from scipy import integrate
 
 
 class sSpolicy:
@@ -14,21 +15,29 @@ class sSpolicy:
         self.K = setup_cost
         self.h = holding_cost
         self.max_demand = max(monthly_demand)
+        self.monthly_demand = monthly_demand
         self.init()
 
     def init(self):
         def x_pdf(x): return self.pdf(x)*x
-        self.mu = MonteCarlo(x_pdf, upperbound=2*self.max_demand).get_mu()
+        # self.mu = integrate.quad(x_pdf, -np.inf, np.inf)[0]
+        self.mu = sum(self.monthly_demand)/len(self.monthly_demand)
+        self.coe_normalize = 1/(integrate.quad(self.pdf, 0, 10*self.max_demand)[0])
         self.s = self.get_s()
-        self.S = int(self.s + (2 * self.mu * self.K / self.h) ** .5)
+        self.S = self.s + (2 * self.mu * self.K / self.h) ** .5
         self.Is = self.s - (self.leadtime+self.period)*self.mu
 
     def get_s(self):
+        def pdf_updated(x):
+            return self.pdf(x)*self.coe_normalize
+        ing = 0
+        x = 0
+        while ing < self.alpha:
+            ing = integrate.quad(pdf_updated, 0, x)[0]
+            # ing = integrate.quad(self.pdf, -np.inf, x)[0]
+            x += 1
+        return x
 
-        s = MonteCarlo(self.pdf, lowerbound=0,
-                       upperbound=2 * self.max_demand,
-                       sim_times=10000).get_F_eq_alpha(self.alpha, self.period+self.leadtime)
-        return s
 
 
 if __name__ == "__main__":

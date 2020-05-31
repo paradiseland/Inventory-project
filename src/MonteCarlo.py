@@ -1,45 +1,29 @@
 import random
 import math
 import numpy as np
+from scipy import integrate
 
 
 class MonteCarlo:
     """
     Define a montecarlo class to get the integrate of complex f(x).
     """
-    def __init__(self, pdf, upperbound, lowerbound=0, sim_times=10000):
+    def __init__(self, pdf, upperbound, lowerbound=0):
         self.pdf = pdf
         self.upperbound = upperbound
         self.lowerbound = lowerbound
-        self.sim_times = sim_times
 
     def get_mu(self):
-        sum_ = 0
-        count = 1
-        def xf(x): return self.pdf(x)*x
-        while count <= self.sim_times:
-            sum_ += xf(random.uniform(self.lowerbound, self.upperbound))
-            count += 1
-        # for i in np.linspace(0, stop=self.upperbound, num=self.sim_times):
-        #     sum_ += xf(i)
-        return (self.upperbound-self.lowerbound)*(sum_/self.sim_times)
+        def x_pdf(x):
+            return self.pdf(x)*x
+        return integrate.quad(x_pdf, self.lowerbound, self.upperbound)[0]
 
     def get_F_eq_alpha(self, alpha, a_l):
-        """
-        al is the sum of leadtime and pandian time.
-        """
-        s = []
-        sum_ = 0
-        i = 0
-        F = 0
-        x = np.linspace(start=0, stop=self.upperbound, num=self.sim_times)
-        while F < alpha:
-            sum_ += self.pdf(x[i])
-            F = (self.upperbound-self.lowerbound)*(sum_/self.sim_times)
-            i += 1
-            s.append(x[i-1])
-
-        return x[i-1]*a_l
+        ing = 0
+        while ing < alpha:
+            ing = integrate.quad(self.pdf, self.lowerbound, self.upperbound)[0]
+            self.upperbound += 1
+        return self.upperbound
 
 
 if __name__ == "__main__":

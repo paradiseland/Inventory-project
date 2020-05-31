@@ -50,11 +50,11 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(2)
         print(monthly_demand)
         print(sum(monthly_demand)/len(monthly_demand))
-        # pdf = kde.pdf
-        # x_p = np.linspace(np.min(kde.demand), np.max(kde.demand), 300)
-        # y_p = [pdf.subs(x, x_i) for x_i in x_p]
-        # ax[0].plot(x_p, y_p)
-        # kde.plot()
+        pdf = kde.pdf
+        x_p = np.linspace(np.min(kde.demand), np.max(kde.demand), 300)
+        y_p = [pdf(x_i) for x_i in x_p]
+        ax[0].plot(x_p, y_p)
+        kde.plot()
         # print(kde.estimate.score(kde.demand))
         print(MonteCarlo(kde.pdf, lowerbound=0, upperbound=1.5 *
                          max(monthly_demand), sim_times=10000).get_mu())

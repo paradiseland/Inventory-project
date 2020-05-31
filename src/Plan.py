@@ -1,5 +1,5 @@
 """
-Compute the cost of original plan 
+Compute the cost of original plan
 -----------------------
 plan:
 
@@ -23,14 +23,14 @@ class Plan:
 
     def outbound_demo(self, file_name):
         """
-        class dataframe into different catagories by its goods code.
+        class data frame into different categories by its goods code.
         """
         outbound_file = os.getcwd()+"/data/"+file_name
         self.df = pd.read_excel(outbound_file)
         df_all = []
         goods_coding = self.df.iloc[:, 0].unique()
-        for catagory in goods_coding:
-            tmp_data = self.df[self.df.iloc[:, 0].isin([catagory])]
+        for category in goods_coding:
+            tmp_data = self.df[self.df.iloc[:, 0].isin([category])]
             df_all.append(tmp_data)
         return df_all
 
@@ -47,13 +47,13 @@ class Plan:
         code = []
         price = []
         for good in self.category:
-            code.append(good.iloc[0,0])
+            code.append(good.iloc[0, 0])
             price.append(good["单价"].mean())
         return dict(zip(code, price))
 
     def get_monthly_demand(self):
         """
-        generate the mothly demand.
+        generate the monthly demand.
         """
         code = []
         demand = []
@@ -92,8 +92,8 @@ class Plan:
         code = []
         quota = []
         for i in self.category:
-            code.append(i.iloc[0,0])
-            quota.append(i.iloc[0,8])
+            code.append(i.iloc[0, 0])
+            quota.append(i.iloc[0, 8])
         return dict(zip(code, quota))
 
     def plot_monthly_demand(self):
@@ -105,7 +105,7 @@ class Plan:
         plt.rcParams['font.family'] = ['Arial Unicode MS']  # 用来正常显示中文标签
         for i in self.code:
             ser_day = self.ser_days[i]
-            ser_mon = pd.Series(self.monthly_demand[i], index = pd.period_range('1/1/2019', '12/1/2019', freq='M'))
+            ser_mon = pd.Series(self.monthly_demand[i], index=pd.period_range('1/1/2019', '12/1/2019', freq='M'))
             time = ser_day.index
             quantity = ser_day.values
             dpi = 100
@@ -113,20 +113,20 @@ class Plan:
             yinch = 768/dpi
             fig, ax = plt.subplots(2, 3, figsize=(xinch, yinch))
             ax[0, 0].plot(time, quantity)
-            ax[0, 0].set_title(self.code_name[str(i)][:5]+'---daily demand') 
+            ax[0, 0].set_title(self.code_name[i][:5]+'---daily demand') 
 
             ax[0, 1].bar(time, quantity)
-            ax[0, 1].set_title(self.code_name[str(i)][:5]+'———[daily]---histogram')
+            ax[0, 1].set_title(self.code_name[i][:5]+'———[daily]---histogram')
 
             plt.sca(ax[0,2])
             ser_day.plot(kind='kde')
             ax[0, 2].set_title('Kernel density figure ---daily')
 
             ax[1, 0].plot(list(range(12)), ser_mon.values)
-            ax[1, 0].set_title(self.code_name[str(i)][:5]+'---monthly demand')
+            ax[1, 0].set_title(self.code_name[i][:5]+'---monthly demand')
 
             ax[1, 1].bar(list(range(12)), ser_mon.values)
-            ax[1, 1].set_title(self.code_name[str(i)][:5]+'———[monthly]---histogram')
+            ax[1, 1].set_title(self.code_name[i][:5]+'———[monthly]---histogram')
 
             plt.sca(ax[1, 2])
             ser_mon.plot(kind='kde')
@@ -158,7 +158,9 @@ class OriginalPlan(Plan):
         """
         order_all = []
         inventory_all = []
+        # dict_res = dict()
         for good in self.code:
+            # all_ = defaultdict(list)
             demand = self.monthly_demand[good]
             quot = self.quota[good]
 
@@ -168,7 +170,7 @@ class OriginalPlan(Plan):
             month = 0
 
             while month < 12:
-                if inventory_will[month] < quot/2:
+                if inventory_will[month] < quot*self.s_coe:
                     order[month+2] = quot - inventory_will[month]
 
                 else:
@@ -177,10 +179,10 @@ class OriginalPlan(Plan):
                 inventory_real[month+1] = inventory_real[month] - demand[month] + order[month+1]
                 inventory_will[month+1] = inventory_will[month]-demand[month] + order[month+2]
                 month += 1
+
             order_all.append(order)
             inventory_all.append([inventory_real, inventory_will])
         return order_all, inventory_all
-
 
     def compute_cost(self):
         order_all, inventory_all = self.get_plan()
@@ -189,7 +191,7 @@ class OriginalPlan(Plan):
             tmp = 0
             order = order_all[ind]
             inventory_real = inventory_all[ind][0]
-            for inv_mon,orde in zip(inventory_real[:12], order[2:]):
+            for inv_mon, orde in zip(inventory_real[:12], order[2:]):
                 if inv_mon > 0:
                     tmp += self.hold_cost_coe*self.price[good]
                 else:
@@ -201,8 +203,71 @@ class OriginalPlan(Plan):
         return cost
 
 
+class sSPlan(Plan):
+    """
+    define a new class of plan to evaluate the sSpolicy
+    """
+    def __init__(self, outbound_name, ininv_name, sS):
+        super().__init__(outbound_name, ininv_name)
+        self.sS = sS
+
+    def get_plan(self):
+        """
+        月初到货,月初盘点
+        """
+        order_all = []
+        inventory_all = []
+        # dict_res = dict()
+        for good in self.code:
+            # all_ = defaultdict(list)
+            demand = self.monthly_demand[good]
+            s = self.sS[good][0]
+            S = self.sS[good][1]
+
+            order = [0]*14  # 2018/11-2019/12: 14 month
+            inventory_real = [self.init_inventory[good]]+[0]*13  # 2019/1-2020/2:14 month
+            inventory_will = [self.init_inventory[good]]+[0]*13
+            month = 0
+
+            while month < 12:
+                if inventory_will[month] < s:
+                    order[month+2] = S - inventory_will[month]
+
+                else:
+                    order[month+2] = 0
+
+                inventory_real[month+1] = inventory_real[month] - demand[month] + order[month+1]
+                inventory_will[month+1] = inventory_will[month]-demand[month] + order[month+2]
+                month += 1
+
+            order_all.append(order)
+            inventory_all.append([inventory_real, inventory_will])
+        return order_all, inventory_all
+
+    def compute_cost(self):
+        order_all, inventory_all = self.get_plan()
+        cost = dict()
+        for ind, good in enumerate(self.code):
+            tmp = 0
+            order = order_all[ind]
+            inventory_real = inventory_all[ind][0]
+            for inv_mon, orde in zip(inventory_real[:12], order[2:]):
+                if inv_mon > 0:
+                    tmp += self.hold_cost_coe*self.price[good]
+                else:
+                    tmp += self.penalty*self.price[good]
+                if orde > 0:
+                    # tmp += self.setup_cost + orde * self.price[good]
+                    tmp += self.setup_cost
+            cost[good] = tmp
+        return cost
+
+
+
 if __name__ == "__main__":
     outbound_filename = "outbound.xlsx"
     initinv_filename = "init_inventory.xlsx"
     ori = OriginalPlan(outbound_filename, initinv_filename)
     # ori.plot_monthly_demand()
+    print(ori.get_plan())
+    print(ori.compute_cost())
