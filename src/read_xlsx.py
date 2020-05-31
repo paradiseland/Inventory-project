@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 
+
 class Outbound:
     def __init__(self, out_file):
         self.df = pd.read_excel(out_file)

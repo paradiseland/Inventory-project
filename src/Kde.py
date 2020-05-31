@@ -57,7 +57,7 @@ if __name__ == "__main__":
         kde.plot()
         # print(kde.estimate.score(kde.demand))
         print(MonteCarlo(kde.pdf, lowerbound=0, upperbound=1.5 *
-                         max(monthly_demand), sim_times=10000).get_mu())
+                         max(monthly_demand)).get_mu())
         print(MonteCarlo(kde.pdf, lowerbound=0, upperbound=1.5 *
-                         max(monthly_demand), sim_times=10000).get_F_eq_alpha(.8, 3))
+                         max(monthly_demand)).get_F_eq_alpha(.8, 3))
         break

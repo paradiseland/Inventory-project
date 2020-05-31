@@ -25,7 +25,7 @@ class Plan:
         """
         class data frame into different categories by its goods code.
         """
-        outbound_file = os.getcwd()+"/data/"+file_name
+        outbound_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/data/"+file_name
         self.df = pd.read_excel(outbound_file)
         df_all = []
         goods_coding = self.df.iloc[:, 0].unique()
@@ -38,7 +38,7 @@ class Plan:
         """
         return dict of code and initial inventory.
         """
-        initinv_file = os.getcwd()+"/data/"+file_name
+        initinv_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/data/"+file_name
         self.inv = pd.read_excel(initinv_file)
         return dict(zip(self.inv["物料编码"].tolist(), self.inv["库存数量"].tolist()))
 
@@ -261,7 +261,6 @@ class sSPlan(Plan):
                     tmp += self.setup_cost
             cost[good] = tmp
         return cost
-
 
 
 if __name__ == "__main__":
