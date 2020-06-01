@@ -8,6 +8,8 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
+from scipy import integrate
+from numpy import inf
 
 
 class Plan:
@@ -20,6 +22,7 @@ class Plan:
         self.category = self.outbound_demo(outbound_name)
         self.init_inventory = self.init_inv(ininv_name)
         self.monthly_demand, self.ser_days, self.code = self.get_monthly_demand()
+        self.isInt = self.get_isInt()
 
     def outbound_demo(self, file_name):
         """
@@ -96,6 +99,18 @@ class Plan:
             quota.append(i.iloc[0, 8])
         return dict(zip(code, quota))
 
+    def get_isInt(self):
+        # True为可以取小数
+        isInt = dict()
+        for i in self.category:
+            desc = i.iloc[0, 2]
+            code = i.iloc[0, 0]
+            if desc in ["千米"]:
+                isInt[code] = True
+            else:
+                isInt[code] = False
+        return isInt
+
     def plot_monthly_demand(self):
         """
         plot the demand of goods in different categories.
@@ -152,7 +167,7 @@ class OriginalPlan(Plan):
         super().__init__(outbound_name, ininv_name)
         self.s_coe = 1/2
 
-    def get_plan(self):
+    def get_plan2(self):
         """
         月初到货,月初盘点
         """
@@ -184,6 +199,49 @@ class OriginalPlan(Plan):
             inventory_all.append([inventory_real, inventory_will])
         return order_all, inventory_all
 
+    def get_plan(self):
+        """
+        月初到货,月初盘点
+        """
+        order_all = []
+        inventory_all = []
+        # dict_res = dict()
+        for good in self.code:
+            # all_ = defaultdict(list)
+            demand = self.monthly_demand[good]
+
+            order = [0] * 14  # 2018/11-2019/12: 14 month
+            inventory_real = [self.init_inventory[good]] + [0] * 13  # 2019/1-2020/2:14 month
+            inventory_will = [self.init_inventory[good]] + [0] * 13
+            out = [0]*12
+            month = 0
+            quot = self.quota[good]
+
+            while month < 12:
+                if inventory_will[month] < quot * self.s_coe:
+                    order[month + 2] = quot - inventory_will[month]
+
+                else:
+                    order[month + 2] = 0
+
+                if inventory_real[month] - demand[month] < 0:
+                    inventory_real[month+1] = 0 + order[month]
+                    out[month] = abs(inventory_real[month] - demand[month])
+
+                    inventory_will[month + 1] = inventory_will[month] - (demand[month]-out[month]) + order[month+2]
+
+                else:
+                    inventory_real[month+1] = inventory_real[month] - demand[month] + order[month]
+                    inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month+2]
+                # inventory_real[month + 1] = inventory_real[month] - demand[month] + order[month + 1]
+                # inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month + 2]
+                month += 1
+
+            order_all.append(order)
+            inventory_all.append([inventory_real, out])
+        # print(order_all[0], inventory_all[0])
+        return order_all, inventory_all
+
     def compute_cost(self):
         order_all, inventory_all = self.get_plan()
         cost = dict()
@@ -191,16 +249,26 @@ class OriginalPlan(Plan):
             tmp = 0
             order = order_all[ind]
             inventory_real = inventory_all[ind][0]
-            for inv_mon, orde in zip(inventory_real[:12], order[2:]):
-                if inv_mon > 0:
-                    tmp += self.hold_cost_coe*self.price[good]
-                else:
-                    tmp += self.penalty*self.price[good]
-                if orde > 0:
-                    # tmp += self.setup_cost + orde * self.price[good]
-                    tmp += self.setup_cost
+            out = inventory_all[ind][1]
+
+            tmp += sum(out)*self.penalty*self.price[good]
+            tmp += self.hold_cost_coe*self.price[good]*sum(inventory_real)
+            tmp += sum([1 for i in order if i > 0]) * self.setup_cost
+            # for inv_mon, orde in zip(inventory_real[:12], order[2:]):
+            #     if inv_mon > 0:
+            #         tmp += self.hold_cost_coe*self.price[good]*inv_mon
+            #     else:
+            #         tmp += self.penalty*self.price[good]* out[]
+            #     if orde > 0:
+            #         # tmp += self.setup_cost + orde * self.price[good]
+            #         tmp += self.setup_cost
             cost[good] = tmp
         return cost
+
+    def get_service_level(self, code, pdf):
+        qut = self.quota[code]
+        res = integrate.quad(pdf, 0, 1/3*self.s_coe*qut)
+        return res
 
 
 class sSPlan(Plan):
@@ -211,7 +279,7 @@ class sSPlan(Plan):
         super().__init__(outbound_name, ininv_name)
         self.sS = sS
 
-    def get_plan(self):
+    def get_plan2(self):
         """
         月初到货,月初盘点
         """
@@ -244,6 +312,58 @@ class sSPlan(Plan):
             inventory_all.append([inventory_real, inventory_will])
         return order_all, inventory_all
 
+    def get_plan(self):
+        order_all = []
+        inventory_all = []
+        # dict_res = dict()
+        for good in self.code:
+            s = self.sS[good][0]
+            S = self.sS[good][1]
+            demand = self.monthly_demand[good]
+
+            order = [0] * 14  # 2018/11-2019/12: 14 month
+            inventory_real = [self.init_inventory[good]] + [0] * 13  # 2019/1-2020/2:14 month
+            inventory_will = [self.init_inventory[good]] + [0] * 13
+            out = [0] * 12
+            month = 0
+            while month < 12:
+                if inventory_will[month] < s:
+                    order[month + 2] = S - inventory_will[month]
+
+                else:
+                    order[month + 2] = 0
+                if inventory_real[month] - demand[month] < 0:
+                    inventory_real[month + 1] = 0 + order[month]
+                    out[month] = abs(inventory_real[month] - demand[month])
+
+                    inventory_will[month + 1] = inventory_will[month] - (demand[month] - out[month]) + order[month + 2]
+
+                else:
+                    inventory_real[month + 1] = inventory_real[month] - demand[month] + order[month]
+                    inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month + 2]
+                # inventory_real[month + 1] = inventory_real[month] - demand[month] + order[month + 1]
+                # inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month + 2]
+                month += 1
+
+            order_all.append(order)
+            inventory_all.append([inventory_real, out])
+        print(order_all[0], inventory_all[0])
+        return order_all, inventory_all
+
+    def estimate(self):
+        order_all, inventory_all = self.get_plan()
+        service_level = dict()
+        for ind, code in enumerate(self.code):
+            real, will = inventory_all[ind]
+            service_level[code] = []
+            for i in range(10):
+                if real[i] > sum(self.monthly_demand[code][i:i+3]):
+                    service_level[code].append(True)
+                else:
+                    service_level[code].append(False)
+        percent = [sum(i)/10 for i in service_level.values()]
+        return percent
+
     def compute_cost(self):
         order_all, inventory_all = self.get_plan()
         cost = dict()
@@ -251,14 +371,19 @@ class sSPlan(Plan):
             tmp = 0
             order = order_all[ind]
             inventory_real = inventory_all[ind][0]
-            for inv_mon, orde in zip(inventory_real[:12], order[2:]):
-                if inv_mon > 0:
-                    tmp += self.hold_cost_coe*self.price[good]
-                else:
-                    tmp += self.penalty*self.price[good]
-                if orde > 0:
-                    # tmp += self.setup_cost + orde * self.price[good]
-                    tmp += self.setup_cost
+            out = inventory_all[ind][1]
+
+            tmp += sum(out)*self.penalty*self.price[good]
+            tmp += self.hold_cost_coe*self.price[good]*sum(inventory_real)
+            tmp += sum([1 for i in order if i > 0]) * self.setup_cost
+            # for inv_mon, orde in zip(inventory_real[:12], order[2:]):
+            #     if inv_mon > 0:
+            #         tmp += self.hold_cost_coe*self.price[good]*inv_mon
+            #     else:
+            #         tmp += self.penalty*self.price[good]* out[]
+            #     if orde > 0:
+            #         # tmp += self.setup_cost + orde * self.price[good]
+            #         tmp += self.setup_cost
             cost[good] = tmp
         return cost
 
@@ -268,5 +393,7 @@ if __name__ == "__main__":
     initinv_filename = "init_inventory.xlsx"
     ori = OriginalPlan(outbound_filename, initinv_filename)
     # ori.plot_monthly_demand()
-    print(ori.get_plan())
-    print(ori.compute_cost())
+    # print(ori.get_plan())
+    # print(ori.compute_cost())
+    # print(ori.get_isInt())
+    print(ori.get_service_level())

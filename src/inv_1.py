@@ -1,0 +1,248 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'inv_1.ui'
+#
+# Created by: PyQt5 UI code generator 5.13.0
+#
+# WARNING! All changes made in this file will be lost!
+
+import sys
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.line = QtWidgets.QFrame(self.centralwidget)
+        self.line.setGeometry(QtCore.QRect(60, 70, 701, 16))
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setObjectName("line")
+        self.horizontalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(90, 30, 621, 41))
+        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.label_datainput = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        self.label_datainput.setEnabled(True)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setWeight(50)
+        self.label_datainput.setFont(font)
+        self.label_datainput.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_datainput.setObjectName("label_datainput")
+        self.horizontalLayout_2.addWidget(self.label_datainput)
+        self.label_policypre = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setWeight(50)
+        self.label_policypre.setFont(font)
+        self.label_policypre.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_policypre.setObjectName("label_policypre")
+        self.horizontalLayout_2.addWidget(self.label_policypre)
+        self.label_evaluation = QtWidgets.QLabel(self.horizontalLayoutWidget)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setWeight(50)
+        self.label_evaluation.setFont(font)
+        self.label_evaluation.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_evaluation.setObjectName("label_evaluation")
+        self.horizontalLayout_2.addWidget(self.label_evaluation)
+        self.calendarWidget = QtWidgets.QCalendarWidget(self.centralwidget)
+        self.calendarWidget.setEnabled(True)
+        self.calendarWidget.setGeometry(QtCore.QRect(230, 250, 441, 181))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.calendarWidget.sizePolicy().hasHeightForWidth())
+        self.calendarWidget.setSizePolicy(sizePolicy)
+        self.calendarWidget.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.calendarWidget.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
+        self.calendarWidget.setSelectedDate(QtCore.QDate(2019, 9, 14))
+        self.calendarWidget.setMinimumDate(QtCore.QDate(2019, 1, 1))
+        self.calendarWidget.setMaximumDate(QtCore.QDate(2019, 12, 31))
+        self.calendarWidget.setFirstDayOfWeek(QtCore.Qt.Sunday)
+        self.calendarWidget.setGridVisible(True)
+        self.calendarWidget.setSelectionMode(QtWidgets.QCalendarWidget.SingleSelection)
+        self.calendarWidget.setHorizontalHeaderFormat(QtWidgets.QCalendarWidget.ShortDayNames)
+        self.calendarWidget.setVerticalHeaderFormat(QtWidgets.QCalendarWidget.NoVerticalHeader)
+        self.calendarWidget.setNavigationBarVisible(True)
+        self.calendarWidget.setDateEditEnabled(True)
+        self.calendarWidget.setObjectName("calendarWidget")
+        self.calendarWidget.clicked[QtCore.QDate].connect(self.showtime)
+
+        self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(220, 110, 451, 131))
+        self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
+        self.verticalLayout_4.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.textEdit = QtWidgets.QTextEdit(self.verticalLayoutWidget_2)
+        self.textEdit.setObjectName("textEdit")
+        self.verticalLayout_4.addWidget(self.textEdit)
+        self.textEdit_2 = QtWidgets.QTextEdit(self.verticalLayoutWidget_2)
+        self.textEdit_2.setObjectName("textEdit_2")
+        self.verticalLayout_4.addWidget(self.textEdit_2)
+
+        self.textEdit_3 = QtWidgets.QTextEdit(self.verticalLayoutWidget_2)
+        self.textEdit_3.setObjectName("textEdit_3")
+        self.textEdit_3.document().setMaximumBlockCount(10)
+        self.verticalLayout_4.addWidget(self.textEdit_3)
+        self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
+        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(30, 100, 181, 151))
+        self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_3.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.btn_inputdata = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(11)
+        self.btn_inputdata.setFont(font)
+        self.btn_inputdata.setObjectName("btn_inputdata")
+        self.btn_inputdata.clicked.connect(self.get_outbound_file)
+        self.verticalLayout_3.addWidget(self.btn_inputdata)
+        self.btn_inputinitinv = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(11)
+        self.btn_inputinitinv.setFont(font)
+        self.btn_inputinitinv.setObjectName("btn_inputinitinv")
+        self.btn_inputinitinv.clicked.connect(self.get_initinv_file)
+        self.verticalLayout_3.addWidget(self.btn_inputinitinv)
+        self.btn_timeselect = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(11)
+        self.btn_timeselect.setFont(font)
+        self.btn_timeselect.setObjectName("btn_timeselect")
+        self.btn_timeselect.clicked.connect(self.textEdit_3.clear)
+        self.verticalLayout_3.addWidget(self.btn_timeselect)
+        self.horizontalLayout_3.addLayout(self.verticalLayout_3)
+        self.horizontalLayoutWidget_3 = QtWidgets.QWidget(self.centralwidget)
+        self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(70, 479, 631, 41))
+        self.horizontalLayoutWidget_3.setObjectName("horizontalLayoutWidget_3")
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_3)
+        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.btn_datademo = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_datademo.sizePolicy().hasHeightForWidth())
+        self.btn_datademo.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("Georgia")
+        font.setPointSize(11)
+        self.btn_datademo.setFont(font)
+        self.btn_datademo.setObjectName("btn_datademo")
+        self.btn_datademo.clicked.connect(self.show_Datademo)
+        self.horizontalLayout_4.addWidget(self.btn_datademo)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem)
+        self.btn_next = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_next.sizePolicy().hasHeightForWidth())
+        self.btn_next.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setPointSize(11)
+        font.setBold(False)
+        font.setWeight(50)
+        self.btn_next.setFont(font)
+        self.btn_next.setObjectName("btn_next")
+        # self.btn_next.clicked.connect(self.step2)
+        self.horizontalLayout_4.addWidget(self.btn_next)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        self.calendarWidget.clicked['QDate'].connect(self.textEdit_3.copy)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label_datainput.setText(_translate("MainWindow", "数据输入"))
+        self.label_policypre.setText(_translate("MainWindow", "策略呈现"))
+        self.label_evaluation.setText(_translate("MainWindow", "效果评估"))
+        self.btn_inputdata.setText(_translate("MainWindow", "导入出库数据："))
+        self.btn_inputinitinv.setText(_translate("MainWindow", "导入初始库存数据："))
+        self.btn_timeselect.setText(_translate("MainWindow", "时间段选择[清空]："))
+        self.btn_datademo.setText(_translate("MainWindow", "Data Demo"))
+        self.btn_next.setText(_translate("MainWindow", "下一步"))
+
+    def get_outbound_file(self):
+        fileName1, filetype = QtWidgets.QFileDialog.getOpenFileName(caption="选取文件", directory="../", filter="Excel Files (*.xlsx)") 
+        print(fileName1, filetype)
+        self.textEdit.setText(fileName1)
+        self.outbound_dir = fileName1
+        print(self.outbound_dir)
+
+    def get_initinv_file(self):
+        fileName2, filetype2 = QtWidgets.QFileDialog.getOpenFileName(caption="选取文件", directory="../", filter="Excel Files (*.xlsx)") 
+        print(fileName2, filetype2)
+        self.textEdit.setText(fileName2)
+        self.initinv_dir = fileName2
+        print(self.initinv_dir)
+    
+    def showtime(self, date):
+        cur = self.textEdit_3.toPlainText()
+        add = date.toString("yyyy-MM")
+        self.time_selected = []
+        if len(cur) > 0 and len(cur) < 8:
+            self.textEdit_3.setText(cur+'--'+add)
+            self.time_selected = [cur, add]
+        elif len(cur) > 15:
+            self.time_selected = [cur, add]
+        else:
+            self.textEdit_3.setText(add)
+        print(len(cur))
+        print(self.time_selected)
+
+    def show_Datademo(self):
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile("/Users/cxw/Learn/3_Coding/Python/SEIM/Inventory_Project/data/outbound.xlsx"))
+
+    # def step2(self):
+        
+
+# class QFile(QtWidgets.QWidget):
+#     def __init__():
+#         super(QFile).__init__()
+#         self.get_file()
+    
+#     def get_file(self):
+#         fileName1, filetype = QtWidgets.QFileDialog.getOpenFileName(self, "选取文件", "./", "Excel Files (*.xls)") 
+#         print(fileName1, filetype)
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    Mainwindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(Mainwindow)
+    Mainwindow.show()
+    sys.exit(app.exec_())
