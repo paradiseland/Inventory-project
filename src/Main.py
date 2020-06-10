@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 
 
 def plot_comp(dic1, dic2):
-    plt.bar(range(len(dic1)), list(dic1.values()))
-    plt.bar([i+0.5 for i in range(len(dic2))], list(dic2.values()))
+    plt.bar(range(len(dic1)), list(dic1.values()), color='#4682B4', width=0.4)
+    plt.bar([i+0.4 for i in range(len(dic2))], list(dic2.values()), color='#D2691E', width=0.4)
+    plt.legend()
     plt.show()
 
 
@@ -41,14 +42,16 @@ if __name__ == "__main__":
         sS_record[code] = [sS.s, sS.S]
 
         # break
-    # print(sS_record)
+    print(sS_record)
+    print(plan.code_name)
     sSplan = sSPlan(outbound_filename, initinv_filename, sS_record)
-    # print(sSplan.estimate())
-    # print(sSplan.get_plan())
+    print(sSplan.estimate())
+    print(sSplan.get_plan())
     print(sSplan.compute_cost())
     # ori.plot_monthly_demand()
-    # print(ori.get_plan())
+    print(ori.get_plan())
     print(ori.compute_cost())
-    # plot_comp(sSplan.compute_cost(), ori.compute_cost())
+    plot_comp(sSplan.compute_cost(), ori.compute_cost())
+
 
 

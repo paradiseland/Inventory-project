@@ -42,7 +42,7 @@ class sSpolicy:
         while ing < self.alpha:
             ing = integrate.quad(pdf_updated, 0, x)[0]
             # ing = integrate.quad(self.pdf, -np.inf, x)[0]
-            x += 1
+            x += 0.1
         return x
 
 

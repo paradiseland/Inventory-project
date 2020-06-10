@@ -5,11 +5,11 @@ plan:
 
 """
 import os
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 from pandas.plotting import register_matplotlib_converters
 from scipy import integrate
-from numpy import inf
 
 
 class Plan:
@@ -18,7 +18,7 @@ class Plan:
         self.period = 1
         self.setup_cost = 100
         self.hold_cost_coe = .05
-        self.penalty = self.hold_cost_coe * 10
+        self.penalty = self.hold_cost_coe * 100
         self.category = self.outbound_demo(outbound_name)
         self.init_inventory = self.init_inv(ininv_name)
         self.monthly_demand, self.ser_days, self.code = self.get_monthly_demand()
@@ -28,7 +28,7 @@ class Plan:
         """
         class data frame into different categories by its goods code.
         """
-        outbound_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/data/"+file_name
+        outbound_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/data/" + file_name
         self.df = pd.read_excel(outbound_file)
         df_all = []
         goods_coding = self.df.iloc[:, 0].unique()
@@ -41,7 +41,7 @@ class Plan:
         """
         return dict of code and initial inventory.
         """
-        initinv_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/data/"+file_name
+        initinv_file = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/data/" + file_name
         self.inv = pd.read_excel(initinv_file)
         return dict(zip(self.inv["物料编码"].tolist(), self.inv["库存数量"].tolist()))
 
@@ -65,8 +65,8 @@ class Plan:
             code.append(good.iloc[0, 0])
             monthly_demand = []
             tmp = good.groupby(['物料编码', '出库单输入日期'])['实发数量'].apply(list)
-            ser_day = pd.Series([sum(i) for i in tmp.values],  index= tmp.index.levels[1])
-            for i in range(1,13):
+            ser_day = pd.Series([sum(i) for i in tmp.values], index=tmp.index.levels[1])
+            for i in range(1, 13):
                 tmp = '2019/{}'.format(i)
                 try:
                     this_month = sum(ser_day.loc[tmp])
@@ -124,24 +124,24 @@ class Plan:
             time = ser_day.index
             quantity = ser_day.values
             dpi = 100
-            xinch = 1366/dpi
-            yinch = 768/dpi
+            xinch = 1366 / dpi
+            yinch = 768 / dpi
             fig, ax = plt.subplots(2, 3, figsize=(xinch, yinch))
             ax[0, 0].plot(time, quantity)
-            ax[0, 0].set_title(self.code_name[i][:5]+'---daily demand') 
+            ax[0, 0].set_title(self.code_name[i][:5] + '---daily demand')
 
             ax[0, 1].bar(time, quantity)
-            ax[0, 1].set_title(self.code_name[i][:5]+'———[daily]---histogram')
+            ax[0, 1].set_title(self.code_name[i][:5] + '———[daily]---histogram')
 
-            plt.sca(ax[0,2])
+            plt.sca(ax[0, 2])
             ser_day.plot(kind='kde')
             ax[0, 2].set_title('Kernel density figure ---daily')
 
             ax[1, 0].plot(list(range(12)), ser_mon.values)
-            ax[1, 0].set_title(self.code_name[i][:5]+'---monthly demand')
+            ax[1, 0].set_title(self.code_name[i][:5] + '---monthly demand')
 
             ax[1, 1].bar(list(range(12)), ser_mon.values)
-            ax[1, 1].set_title(self.code_name[i][:5]+'———[monthly]---histogram')
+            ax[1, 1].set_title(self.code_name[i][:5] + '———[monthly]---histogram')
 
             plt.sca(ax[1, 2])
             ser_mon.plot(kind='kde')
@@ -153,7 +153,7 @@ class Plan:
 
                 ax[1, i].set_xticks(list(range(12)))
                 ax[1, i].set_xticklabels(
-                    [str(i)+'月' for i in list(range(1, 13))])
+                        [str(i) + '月' for i in list(range(1, 13))])
 
             plt.grid(True)
             # plt.savefig(f'./result/{code_name[str(good_code)][:5]}.png',
@@ -165,7 +165,7 @@ class OriginalPlan(Plan):
 
     def __init__(self, outbound_name, ininv_name):
         super().__init__(outbound_name, ininv_name)
-        self.s_coe = 1/2
+        self.s_coe = 1 / 2
 
     def get_plan2(self):
         """
@@ -179,20 +179,20 @@ class OriginalPlan(Plan):
             demand = self.monthly_demand[good]
             quot = self.quota[good]
 
-            order = [0]*14  # 2018/11-2019/12: 14 month
-            inventory_real = [self.init_inventory[good]]+[0]*13  # 2019/1-2020/2:14 month
-            inventory_will = [self.init_inventory[good]]+[0]*13
+            order = [0] * 14  # 2018/11-2019/12: 14 month
+            inventory_real = [self.init_inventory[good]] + [0] * 13  # 2019/1-2020/2:14 month
+            inventory_will = [self.init_inventory[good]] + [0] * 13
             month = 0
 
             while month < 12:
-                if inventory_will[month] < quot*self.s_coe:
-                    order[month+2] = quot - inventory_will[month]
+                if inventory_will[month] < quot * self.s_coe:
+                    order[month + 2] = quot - inventory_will[month]
 
                 else:
-                    order[month+2] = 0
+                    order[month + 2] = 0
 
-                inventory_real[month+1] = inventory_real[month] - demand[month] + order[month+1]
-                inventory_will[month+1] = inventory_will[month]-demand[month] + order[month+2]
+                inventory_real[month + 1] = inventory_real[month] - demand[month] + order[month + 1]
+                inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month + 2]
                 month += 1
 
             order_all.append(order)
@@ -213,7 +213,7 @@ class OriginalPlan(Plan):
             order = [0] * 14  # 2018/11-2019/12: 14 month
             inventory_real = [self.init_inventory[good]] + [0] * 13  # 2019/1-2020/2:14 month
             inventory_will = [self.init_inventory[good]] + [0] * 13
-            out = [0]*12
+            out = [0] * 12
             month = 0
             quot = self.quota[good]
 
@@ -225,14 +225,14 @@ class OriginalPlan(Plan):
                     order[month + 2] = 0
 
                 if inventory_real[month] - demand[month] < 0:
-                    inventory_real[month+1] = 0 + order[month]
+                    inventory_real[month + 1] = 0 + order[month]
                     out[month] = abs(inventory_real[month] - demand[month])
 
-                    inventory_will[month + 1] = inventory_will[month] - (demand[month]-out[month]) + order[month+2]
+                    inventory_will[month + 1] = inventory_will[month] - (demand[month] - out[month]) + order[month + 2]
 
                 else:
-                    inventory_real[month+1] = inventory_real[month] - demand[month] + order[month]
-                    inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month+2]
+                    inventory_real[month + 1] = inventory_real[month] - demand[month] + order[month]
+                    inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month + 2]
                 # inventory_real[month + 1] = inventory_real[month] - demand[month] + order[month + 1]
                 # inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month + 2]
                 month += 1
@@ -251,8 +251,8 @@ class OriginalPlan(Plan):
             inventory_real = inventory_all[ind][0]
             out = inventory_all[ind][1]
 
-            tmp += sum(out)*self.penalty*self.price[good]
-            tmp += self.hold_cost_coe*self.price[good]*sum(inventory_real)
+            tmp += sum(out) * self.penalty * self.price[good]
+            tmp += self.hold_cost_coe * self.price[good] * sum(inventory_real)
             tmp += sum([1 for i in order if i > 0]) * self.setup_cost
             # for inv_mon, orde in zip(inventory_real[:12], order[2:]):
             #     if inv_mon > 0:
@@ -267,7 +267,7 @@ class OriginalPlan(Plan):
 
     def get_service_level(self, code, pdf):
         qut = self.quota[code]
-        res = integrate.quad(pdf, 0, 1/3*self.s_coe*qut)
+        res = integrate.quad(pdf, 0, 1 / 3 * self.s_coe * qut)
         return res
 
 
@@ -275,6 +275,7 @@ class sSPlan(Plan):
     """
     define a new class of plan to evaluate the sSpolicy
     """
+
     def __init__(self, outbound_name, ininv_name, sS):
         super().__init__(outbound_name, ininv_name)
         self.sS = sS
@@ -292,20 +293,20 @@ class sSPlan(Plan):
             s = self.sS[good][0]
             S = self.sS[good][1]
 
-            order = [0]*14  # 2018/11-2019/12: 14 month
-            inventory_real = [self.init_inventory[good]]+[0]*13  # 2019/1-2020/2:14 month
-            inventory_will = [self.init_inventory[good]]+[0]*13
+            order = [0] * 14  # 2018/11-2019/12: 14 month
+            inventory_real = [self.init_inventory[good]] + [0] * 13  # 2019/1-2020/2:14 month
+            inventory_will = [self.init_inventory[good]] + [0] * 13
             month = 0
 
             while month < 12:
                 if inventory_will[month] < s:
-                    order[month+2] = S - inventory_will[month]
+                    order[month + 2] = S - inventory_will[month]
 
                 else:
-                    order[month+2] = 0
+                    order[month + 2] = 0
 
-                inventory_real[month+1] = inventory_real[month] - demand[month] + order[month+1]
-                inventory_will[month+1] = inventory_will[month]-demand[month] + order[month+2]
+                inventory_real[month + 1] = inventory_real[month] - demand[month] + order[month + 1]
+                inventory_will[month + 1] = inventory_will[month] - demand[month] + order[month + 2]
                 month += 1
 
             order_all.append(order)
@@ -313,6 +314,7 @@ class sSPlan(Plan):
         return order_all, inventory_all
 
     def get_plan(self):
+
         order_all = []
         inventory_all = []
         # dict_res = dict()
@@ -320,7 +322,6 @@ class sSPlan(Plan):
             s = self.sS[good][0]
             S = self.sS[good][1]
             demand = self.monthly_demand[good]
-
             order = [0] * 14  # 2018/11-2019/12: 14 month
             inventory_real = [self.init_inventory[good]] + [0] * 13  # 2019/1-2020/2:14 month
             inventory_will = [self.init_inventory[good]] + [0] * 13
@@ -357,11 +358,11 @@ class sSPlan(Plan):
             real, will = inventory_all[ind]
             service_level[code] = []
             for i in range(10):
-                if real[i] > sum(self.monthly_demand[code][i:i+3]):
+                if real[i] > sum(self.monthly_demand[code][i:i + 3]):
                     service_level[code].append(True)
                 else:
                     service_level[code].append(False)
-        percent = [sum(i)/10 for i in service_level.values()]
+        percent = [sum(i) / 10 for i in service_level.values()]
         return percent
 
     def compute_cost(self):
@@ -373,8 +374,8 @@ class sSPlan(Plan):
             inventory_real = inventory_all[ind][0]
             out = inventory_all[ind][1]
 
-            tmp += sum(out)*self.penalty*self.price[good]
-            tmp += self.hold_cost_coe*self.price[good]*sum(inventory_real)
+            tmp += sum(out) * self.penalty * self.price[good]
+            tmp += self.hold_cost_coe * self.price[good] * sum(inventory_real)
             tmp += sum([1 for i in order if i > 0]) * self.setup_cost
             # for inv_mon, orde in zip(inventory_real[:12], order[2:]):
             #     if inv_mon > 0:
